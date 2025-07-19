@@ -617,8 +617,8 @@ class AtlasExplorer {
                 map: this.map,
                 icon: {
                     path: google.maps.SymbolPath.CIRCLE,
-                    scale: 6,
-                    fillColor: '#3b82f6',
+                    scale: 9,
+                    fillColor: '#f91717ff',
                     fillOpacity: 1,
                     strokeColor: '#fff',
                     strokeWeight: 2
