@@ -32,22 +32,150 @@ class AtlasExplorer {
     }
 
     setupMap() {
-        this.map = L.map('map', {
-            center: [40.7128, -74.0060],
-            zoom: 12,
-            zoomControl: false,
-            attributionControl: false
+        this.map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: 40.7128, lng: -74.0060 },
+            zoom: 13,
+            disableDefaultUI: true,
+            styles: [
+    {
+        "featureType": "all",
+        "elementType": "labels.text.fill",
+        "stylers": [
+            {
+                "color": "#ffffff"
+            }
+        ]
+    },
+    {
+        "featureType": "all",
+        "elementType": "labels.text.stroke",
+        "stylers": [
+            {
+                "color": "#000000"
+            },
+            {
+                "lightness": 13
+            }
+        ]
+    },
+    {
+        "featureType": "administrative",
+        "elementType": "geometry.fill",
+        "stylers": [
+            {
+                "color": "#000000"
+            }
+        ]
+    },
+    {
+        "featureType": "administrative",
+        "elementType": "geometry.stroke",
+        "stylers": [
+            {
+                "color": "#144b53"
+            },
+            {
+                "lightness": 14
+            },
+            {
+                "weight": 1.4
+            }
+        ]
+    },
+    {
+        "featureType": "landscape",
+        "elementType": "all",
+        "stylers": [
+            {
+                "color": "#08304b"
+            }
+        ]
+    },
+    {
+        "featureType": "poi",
+        "elementType": "geometry",
+        "stylers": [
+            {
+                "color": "#0c4152"
+            },
+            {
+                "lightness": 5
+            }
+        ]
+    },
+    {
+        "featureType": "road.highway",
+        "elementType": "geometry.fill",
+        "stylers": [
+            {
+                "color": "#000000"
+            }
+        ]
+    },
+    {
+        "featureType": "road.highway",
+        "elementType": "geometry.stroke",
+        "stylers": [
+            {
+                "color": "#0b434f"
+            },
+            {
+                "lightness": 25
+            }
+        ]
+    },
+    {
+        "featureType": "road.arterial",
+        "elementType": "geometry.fill",
+        "stylers": [
+            {
+                "color": "#000000"
+            }
+        ]
+    },
+    {
+        "featureType": "road.arterial",
+        "elementType": "geometry.stroke",
+        "stylers": [
+            {
+                "color": "#0b3d51"
+            },
+            {
+                "lightness": 16
+            }
+        ]
+    },
+    {
+        "featureType": "road.local",
+        "elementType": "geometry",
+        "stylers": [
+            {
+                "color": "#000000"
+            }
+        ]
+    },
+    {
+        "featureType": "transit",
+        "elementType": "all",
+        "stylers": [
+            {
+                "color": "#146474"
+            }
+        ]
+    },
+    {
+        "featureType": "water",
+        "elementType": "all",
+        "stylers": [
+            {
+                "color": "#021019"
+            }
+        ]
+    }
+]
         });
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '© OpenStreetMap contributors, © CARTO',
-            subdomains: 'abcd',
-            maxZoom: 19
-        }).addTo(this.map);
-        L.control.attribution({
-            position: 'bottomright',
-            prefix: '🗺️ Atlasphere'
-        }).addTo(this.map);
-        this.map.on('load', () => {
+
+        this.map.addListener('tilesloaded', () => {
             this.showToast('Map loaded successfully!', 'success');
         });
     }
@@ -245,61 +373,51 @@ class AtlasExplorer {
     }
 
     addMarkersToMap() {
-        this.markers.forEach(marker => {
-            this.map.removeLayer(marker);
-        });
+        this.markers.forEach(marker => marker.setMap(null));
         this.markers.clear();
 
-        const filteredLocations = this.currentFilter === 'all' 
+        const filtered = this.currentFilter === 'all' 
             ? this.locations 
-            : this.locations.filter(location => location.category === this.currentFilter);
+            : this.locations.filter(l => l.category === this.currentFilter);
 
-        filteredLocations.forEach(location => {
+        filtered.forEach(location => {
             const marker = this.createCustomMarker(location);
-            marker.addTo(this.map);
             this.markers.set(location.id, marker);
         });
     }
 
     createCustomMarker(location) {
-        const categoryColors = {
-            restaurant: '#ef4444',
-            park: '#22c55e',
-            museum: '#8b5cf6',
-            landmark: '#f59e0b',
-            shopping: '#ec4899',
-            default: '#10b981'
+        const categoryIcons = {
+            restaurant: '🍽️',
+            park: '🌳',
+            museum: '🏛️',
+            landmark: '🗼',
+            shopping: '🛍️',
+            default: '📍'
         };
 
-        const color = categoryColors[location.category] || categoryColors.default;
-        
-        const customIcon = L.divIcon({
-            html: `
-                <div style="
-                    background: ${color};
-                    width: 30px;
-                    height: 30px;
-                    border-radius: 50%;
-                    border: 3px solid white;
-                    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 14px;
-                    color: white;
-                    font-weight: bold;
-                    position: relative;
-                    animation: pulse 2s infinite;
-                ">${location.image}</div>
-            `,
-            className: 'custom-marker',
-            iconSize: [30, 30],
-            iconAnchor: [15, 15]
+        const iconLabel = categoryIcons[location.category] || categoryIcons.default;
+
+        const marker = new google.maps.Marker({
+            position: { lat: location.lat, lng: location.lng },
+            map: this.map,
+            label: {
+                text: iconLabel,
+                fontSize: '14px',
+                color: '#fff',
+                fontWeight: 'bold'
+            },
+            icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                fillColor: this.getCategoryColor(location.category),
+                fillOpacity: 1,
+                strokeColor: '#fff',
+                strokeWeight: 2,
+                scale: 10
+            }
         });
 
-        const marker = L.marker([location.lat, location.lng], { icon: customIcon });
-        
-        const popupContent = `
+        const content = `
             <div class="popup-content">
                 <div class="popup-title">${location.name}</div>
                 <div class="popup-category">${location.category}</div>
@@ -310,127 +428,180 @@ class AtlasExplorer {
                 </div>
                 <div style="color: #64748b; font-size: 0.75rem; margin-bottom: 1rem;">${location.details}</div>
                 <div class="popup-actions">
-                    <button class="popup-btn" onclick="atlasExplorer.getDirections(${location.lat}, ${location.lng})">
-                        📍 Directions
-                    </button>
-                    <button class="popup-btn" onclick="atlasExplorer.shareLocation('${location.name}', ${location.lat}, ${location.lng})">
-                        📤 Share
-                    </button>
+                    <button class="popup-btn" onclick="atlasExplorer.getDirections(${location.lat}, ${location.lng})">📍 Directions</button>
+                    <button class="popup-btn" onclick="atlasExplorer.shareLocation('${location.name}', ${location.lat}, ${location.lng})">📤 Share</button>
                 </div>
             </div>
         `;
 
-        marker.bindPopup(popupContent, {
-            maxWidth: 300,
-            className: 'custom-popup'
+        const infoWindow = new google.maps.InfoWindow({ content });
+
+        marker.addListener('click', () => {
+            infoWindow.open(this.map, marker);
         });
 
         return marker;
     }
 
+    getCategoryColor(category) {
+        const colors = {
+            restaurant: '#ef4444',
+            park: '#22c55e',
+            museum: '#8b5cf6',
+            landmark: '#f59e0b',
+            shopping: '#ec4899',
+            default: '#10b981'
+        };
+        return colors[category] || colors.default;
+    }
+
     handleSearch() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-        
-        if (!searchTerm) {
+        const input = document.getElementById('searchInput');
+        const query = input.value.trim();
+
+        if (!query) {
             this.showToast('Please enter a search term', 'warning');
             return;
         }
 
-        const foundLocation = this.locations.find(location => 
-            location.name.toLowerCase().includes(searchTerm) ||
-            location.category.toLowerCase().includes(searchTerm) ||
-            location.description.toLowerCase().includes(searchTerm)
-        );
+        const service = new google.maps.places.PlacesService(this.map);
+        const request = {
+            query: query,
+            fields: ['name', 'geometry'],
+            bounds: this.map.getBounds() // 👈 this improves relevance!
+        };
 
-        if (foundLocation) {
-            this.focusOnLocation(foundLocation);
-            this.showToast(`Found: ${foundLocation.name}`, 'success');
-        } else {
-            this.showToast('Location not found', 'error');
-        }
+        service.findPlaceFromQuery(request, (results, status) => {
+            if (status === google.maps.places.PlacesServiceStatus.OK && results.length > 0) {
+                const place = results[0];
+                const location = place.geometry.location;
+                this.map.setCenter(location);
+                this.map.setZoom(15);
+                this.showToast(`Found: ${place.name}`, 'success');
+                this.fetchNearbyPlaces(location); // triggers Places API load
+            } else {
+                this.showToast('Location not found', 'error');
+            }
+        });
+    }
+    fetchNearbyPlaces(center) {
+        const categoryMap = {
+            restaurant: 'restaurant',
+            park: 'park',
+            museum: 'museum',
+            landmark: 'tourist_attraction',
+            shopping: 'shopping_mall',
+            all: '' // no type filter
+        };
+
+        const selectedType = categoryMap[this.currentFilter];
+
+        const service = new google.maps.places.PlacesService(this.map);
+
+        const request = {
+            location: center,
+            radius: 2000,
+            type: selectedType || undefined
+        };
+
+        service.nearbySearch(request, (results, status) => {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                this.locations = []; // ✅ clear old list
+                this.markers.forEach(m => m.setMap(null)); // ✅ remove old markers
+                this.markers.clear();
+
+                this.locations = results.map(place => ({
+                    id: place.place_id,
+                    name: place.name,
+                    category: this.currentFilter || 'unknown',
+                    lat: place.geometry.location.lat(),
+                    lng: place.geometry.location.lng(),
+                    description: place.vicinity || 'No description available.',
+                    rating: place.rating || 0,
+                    reviews: place.user_ratings_total || 0,
+                    image: this.getCategoryEmoji(this.currentFilter),
+                    details: place.opening_hours?.open_now ? 'Open now' : 'Closed'
+                }));
+
+                this.renderLocations();
+                this.addMarkersToMap();
+                this.updateStats();
+            } else {
+                this.showToast('No nearby places found', 'warning');
+            }
+        });
+    }
+
+    getCategoryEmoji(category) {
+        const icons = {
+            restaurant: '🍽️',
+            park: '🌳',
+            museum: '🏛️',
+            landmark: '🗼',
+            shopping: '🛍️',
+            default: '📍'
+        };
+        return icons[category] || icons.default;
     }
 
     handleFilter(category) {
         this.currentFilter = category;
-        
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
+
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelector(`[data-category="${category}"]`).classList.add('active');
 
-        this.renderLocations();
-        this.addMarkersToMap();
-        this.updateStats();
-        
-        this.showToast(`Filtered by: ${category === 'all' ? 'All categories' : category}`, 'success');
+        if (this.map) {
+            const center = this.map.getCenter();
+            this.fetchNearbyPlaces(center);
+        }
+
+        this.showToast(`Filtered by: ${category === 'all' ? 'All' : category}`, 'success');
     }
 
     focusOnLocation(location) {
-        this.map.setView([location.lat, location.lng], 16);
+        this.map.panTo({ lat: location.lat, lng: location.lng });
+        this.map.setZoom(16);
         
         const marker = this.markers.get(location.id);
-        if (marker) {
-            marker.openPopup();
-        }
+        if (marker) google.maps.event.trigger(marker, 'click');
     }
 
     getUserLocation() {
         if (!navigator.geolocation) {
-            this.showToast('Geolocation is not supported by this browser', 'error');
+            this.showToast('Geolocation is not supported', 'error');
             return;
         }
 
-        this.showToast('Getting your location...', 'success');
+        this.showToast('Locating...', 'success');
 
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const { latitude, longitude } = position.coords;
-                this.userLocation = { lat: latitude, lng: longitude };
-                
-                if (this.userLocationMarker) {
-                    this.map.removeLayer(this.userLocationMarker);
-                }
-                
-                const userIcon = L.divIcon({
-                    html: `
-                        <div style="
-                            background: #3b82f6;
-                            width: 20px;
-                            height: 20px;
-                            border-radius: 50%;
-                            border: 3px solid white;
-                            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-                            animation: pulse 2s infinite;
-                        "></div>
-                    `,
-                    className: 'user-location-marker',
-                    iconSize: [20, 20],
-                    iconAnchor: [10, 10]
-                });
+        navigator.geolocation.getCurrentPosition((pos) => {
+            const { latitude, longitude } = pos.coords;
+            this.userLocation = { lat: latitude, lng: longitude };
 
-                this.userLocationMarker = L.marker([latitude, longitude], { icon: userIcon })
-                    .addTo(this.map)
-                    .bindPopup('<div class="popup-content"><div class="popup-title">Your Location</div></div>');
-
-                this.map.setView([latitude, longitude], 14);
-                this.showToast('Location found!', 'success');
-            },
-            (error) => {
-                let message = 'Failed to get location';
-                switch (error.code) {
-                    case error.PERMISSION_DENIED:
-                        message = 'Location access denied by user';
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        message = 'Location information unavailable';
-                        break;
-                    case error.TIMEOUT:
-                        message = 'Location request timed out';
-                        break;
-                }
-                this.showToast(message, 'error');
+            if (this.userLocationMarker) {
+                this.userLocationMarker.setMap(null);
             }
-        );
+
+            this.userLocationMarker = new google.maps.Marker({
+                position: { lat: latitude, lng: longitude },
+                map: this.map,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 6,
+                    fillColor: '#3b82f6',
+                    fillOpacity: 1,
+                    strokeColor: '#fff',
+                    strokeWeight: 2
+                },
+                title: 'Your Location'
+            });
+
+            this.map.panTo(this.userLocation);
+            this.map.setZoom(14);
+            this.showToast('Location found!', 'success');
+        }, (error) => {
+            this.showToast('Failed to get location', 'error');
+        });
     }
 
     toggleFullscreen() {
