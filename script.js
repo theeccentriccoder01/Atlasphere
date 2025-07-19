@@ -15,6 +15,7 @@ class AtlasExplorer {
         this.showLoading();
         this.setupMap();
         this.setupEventListeners();
+        this.initAutocomplete();
         this.loadLocations();
         this.hideLoading();
     }
@@ -468,7 +469,7 @@ class AtlasExplorer {
         const request = {
             query: query,
             fields: ['name', 'geometry'],
-            bounds: this.map.getBounds() // 👈 this improves relevance!
+            bounds: this.map.getBounds()
         };
 
         service.findPlaceFromQuery(request, (results, status) => {
@@ -478,12 +479,37 @@ class AtlasExplorer {
                 this.map.setCenter(location);
                 this.map.setZoom(15);
                 this.showToast(`Found: ${place.name}`, 'success');
-                this.fetchNearbyPlaces(location); // triggers Places API load
+                this.fetchNearbyPlaces(location);
             } else {
                 this.showToast('Location not found', 'error');
             }
         });
     }
+
+    initAutocomplete() {
+        const input = document.getElementById("searchInput");
+        const autocomplete = new google.maps.places.Autocomplete(input, {
+            types: ['geocode'],
+            fields: ['geometry', 'name']
+        });
+
+        autocomplete.bindTo("bounds", this.map);
+
+        autocomplete.addListener("place_changed", () => {
+            const place = autocomplete.getPlace();
+            if (!place.geometry || !place.geometry.location) {
+                this.showToast("Location not found", "error");
+                return;
+            }
+
+            this.map.setCenter(place.geometry.location);
+            this.map.setZoom(15);
+
+            this.showToast(`Found: ${place.name}`, 'success');
+            this.fetchNearbyPlaces(place.geometry.location);
+        });
+    }
+
     fetchNearbyPlaces(center) {
         const categoryMap = {
             restaurant: 'restaurant',
@@ -491,7 +517,7 @@ class AtlasExplorer {
             museum: 'museum',
             landmark: 'tourist_attraction',
             shopping: 'shopping_mall',
-            all: '' // no type filter
+            all: null
         };
 
         const selectedType = categoryMap[this.currentFilter];
@@ -500,16 +526,16 @@ class AtlasExplorer {
 
         const request = {
             location: center,
-            radius: 2000,
+            radius: 3000,
             type: selectedType || undefined
         };
 
         service.nearbySearch(request, (results, status) => {
-            if (status === google.maps.places.PlacesServiceStatus.OK) {
-                this.locations = []; // ✅ clear old list
-                this.markers.forEach(m => m.setMap(null)); // ✅ remove old markers
-                this.markers.clear();
+            this.locations = [];
+            this.markers.forEach(m => m.setMap(null));
+            this.markers.clear();
 
+            if (status === google.maps.places.PlacesServiceStatus.OK && results.length > 0) {
                 this.locations = results.map(place => ({
                     id: place.place_id,
                     name: place.name,
@@ -528,6 +554,8 @@ class AtlasExplorer {
                 this.updateStats();
             } else {
                 this.showToast('No nearby places found', 'warning');
+                this.renderLocations();
+                this.updateStats();
             }
         });
     }
@@ -547,15 +575,17 @@ class AtlasExplorer {
     handleFilter(category) {
         this.currentFilter = category;
 
-        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
         document.querySelector(`[data-category="${category}"]`).classList.add('active');
 
-        if (this.map) {
-            const center = this.map.getCenter();
+        const center = this.map.getCenter();
+        if (center) {
             this.fetchNearbyPlaces(center);
+        } else {
+            this.showToast("Map not ready", "error");
         }
-
-        this.showToast(`Filtered by: ${category === 'all' ? 'All' : category}`, 'success');
     }
 
     focusOnLocation(location) {
