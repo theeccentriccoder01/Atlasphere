@@ -34,13 +34,14 @@
 html {
     font-size: 16px;
     line-height: 1.5;
+    overflow: hidden;
 }
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--primary-color);
     color: var(--text-primary);
-    overflow: auto;
+    overflow: hidden;
 }
 
 /* App Container */
@@ -181,6 +182,7 @@ body {
     flex: 1;
     overflow-y: auto;
     padding: 0;
+    height: calc(100vh - 100px); 
 }
 
 .sidebar-content::-webkit-scrollbar {
@@ -410,6 +412,10 @@ body {
 .map-container {
     position: relative;
     height: 100%;
+    width: 100%;
+}
+
+.sidebar.collapsed + .main-content .map-container {
     width: 100%;
 }
 

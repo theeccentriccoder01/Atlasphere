@@ -195,15 +195,16 @@ class AtlasExplorer {
         });
 
         document.getElementById('zoomInBtn').addEventListener('click', () => {
-            this.map.zoomIn();
+            this.map.setZoom(this.map.getZoom() + 1);
         });
-        
+
         document.getElementById('zoomOutBtn').addEventListener('click', () => {
-            this.map.zoomOut();
+            this.map.setZoom(this.map.getZoom() - 1);
         });
-        
+
         document.getElementById('resetViewBtn').addEventListener('click', () => {
-            this.map.setView([40.7128, -74.0060], 12);
+            this.map.setCenter({ lat: 40.7128, lng: -74.0060 });
+            this.map.setZoom(13);
         });
 
         document.getElementById('locationBtn').addEventListener('click', () => {
@@ -217,11 +218,6 @@ class AtlasExplorer {
         document.getElementById('sidebarToggle').addEventListener('click', () => {
             this.toggleSidebar();
         });
-
-        if (window.innerWidth <= 768) {
-            this.isSidebarOpen = false;
-            document.getElementById('sidebar').classList.add('collapsed');
-        }
 
         window.addEventListener('resize', () => {
             if (window.innerWidth > 768 && !this.isSidebarOpen) {
@@ -368,6 +364,7 @@ class AtlasExplorer {
 
         card.addEventListener('click', () => {
             this.focusOnLocation(location);
+            card.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
 
         return card;
@@ -661,16 +658,13 @@ class AtlasExplorer {
     toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
         const toggleIcon = document.querySelector('.toggle-icon');
-        
-        if (this.isSidebarOpen) {
-            sidebar.classList.add('collapsed');
-            toggleIcon.textContent = '›';
-            this.isSidebarOpen = false;
-        } else {
-            sidebar.classList.remove('collapsed');
-            toggleIcon.textContent = '‹';
-            this.isSidebarOpen = true;
-        }
+
+        this.isSidebarOpen = !this.isSidebarOpen;
+
+        sidebar.classList.toggle('collapsed', !this.isSidebarOpen);
+        toggleIcon.textContent = this.isSidebarOpen ? '‹' : '›';
+
+        google.maps.event.trigger(this.map, 'resize');
     }
 
     getDirections(lat, lng) {
