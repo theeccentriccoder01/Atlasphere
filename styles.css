@@ -162,14 +162,23 @@ body {
 }
 
 .sidebar-toggle {
-    background: none;
-    border: none;
+    position: absolute;
+    top: 100px;
+    left: 400px;
+    z-index: 1001;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
     color: var(--text-secondary);
     font-size: 1.5rem;
     cursor: pointer;
-    padding: 0.5rem;
     border-radius: var(--border-radius-sm);
     transition: var(--transition);
+    padding: 0.5rem;
+}
+
+.sidebar.collapsed + .sidebar-toggle {
+    left: 0;
+    transform: translateX(0);
 }
 
 .sidebar-toggle:hover {
