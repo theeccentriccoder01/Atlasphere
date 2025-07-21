@@ -658,10 +658,12 @@ class AtlasExplorer {
     toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
         const toggleIcon = document.querySelector('.toggle-icon');
+        const appContainer = document.querySelector('.app-container');
 
         this.isSidebarOpen = !this.isSidebarOpen;
 
         sidebar.classList.toggle('collapsed', !this.isSidebarOpen);
+        appContainer.classList.toggle('sidebar-collapsed', !this.isSidebarOpen);
         toggleIcon.textContent = this.isSidebarOpen ? '‹' : '›';
 
         google.maps.event.trigger(this.map, 'resize');
