@@ -84,7 +84,7 @@ Atlasphere is built using a combination of standard web technologies and the pow
 
 ## ⚙️ Setup Instructions
 
-To run Sagnik's Atlasphere:
+To run Atlasphere:
 
 ### 1. Clone the Repository
 
