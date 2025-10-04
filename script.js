@@ -13,11 +13,7 @@ class AtlasExplorer {
 
     init() {
         this.showLoading();
-        this.setupMap();
-        this.setupEventListeners();
-        this.initAutocomplete();
-        this.loadLocations();
-        this.hideLoading();
+        this.requestLocationPermission();
     }
 
     showLoading() {
@@ -32,9 +28,114 @@ class AtlasExplorer {
         }, 1500);
     }
 
-    setupMap() {
+    requestLocationPermission() {
+        // Check if geolocation is supported
+        if (!navigator.geolocation) {
+            this.showLocationModal(false);
+            return;
+        }
+
+        // Show location permission modal
+        this.showLocationModal(true);
+    }
+
+    showLocationModal(geolocationSupported) {
+        const modal = document.createElement('div');
+        modal.className = 'location-modal';
+        modal.innerHTML = `
+            <div class="location-modal-content">
+                <div class="location-modal-header">
+                    <span class="location-icon">📍</span>
+                    <h2>Location Access</h2>
+                </div>
+                <div class="location-modal-body">
+                    <p>Atlasphere would like to access your location to show you nearby places and provide a personalized experience.</p>
+                    <p class="location-benefits">
+                        <span class="benefit">✓ Find places near you</span>
+                        <span class="benefit">✓ Get personalized recommendations</span>
+                        <span class="benefit">✓ Quick access to your area</span>
+                    </p>
+                </div>
+                <div class="location-modal-actions">
+                    ${geolocationSupported ? `
+                        <button class="btn btn-primary" id="allowLocationBtn">
+                            <span class="btn-icon">✅</span>
+                            Allow Location
+                        </button>
+                        <button class="btn btn-secondary" id="denyLocationBtn">
+                            <span class="btn-icon">❌</span>
+                            Use Default Location
+                        </button>
+                    ` : `
+                        <button class="btn btn-primary" id="continueWithoutLocationBtn">
+                            <span class="btn-icon">🗺️</span>
+                            Continue with Default Location
+                        </button>
+                    `}
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Add event listeners
+        if (geolocationSupported) {
+            document.getElementById('allowLocationBtn').addEventListener('click', () => {
+                this.getUserLocationAndInitialize();
+                document.body.removeChild(modal);
+            });
+
+            document.getElementById('denyLocationBtn').addEventListener('click', () => {
+                this.initializeWithDefaultLocation();
+                document.body.removeChild(modal);
+            });
+        } else {
+            document.getElementById('continueWithoutLocationBtn').addEventListener('click', () => {
+                this.initializeWithDefaultLocation();
+                document.body.removeChild(modal);
+            });
+        }
+    }
+
+    getUserLocationAndInitialize() {
+        this.showToast('Getting your location...', 'success');
+        
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                this.userLocation = { lat: latitude, lng: longitude };
+                this.initializeMap(this.userLocation);
+                this.showToast('Location found! Showing your area.', 'success');
+            },
+            (error) => {
+                console.warn('Location access denied or failed:', error);
+                this.initializeWithDefaultLocation();
+                this.showToast('Using default location instead.', 'warning');
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 300000 // 5 minutes
+            }
+        );
+    }
+
+    initializeWithDefaultLocation() {
+        const defaultLocation = { lat: 40.7128, lng: -74.0060 }; // New York City
+        this.initializeMap(defaultLocation);
+    }
+
+    initializeMap(centerLocation) {
+        this.setupMap(centerLocation);
+        this.setupEventListeners();
+        this.initAutocomplete();
+        this.loadLocations();
+        this.hideLoading();
+    }
+
+    setupMap(centerLocation = { lat: 40.7128, lng: -74.0060 }) {
         this.map = new google.maps.Map(document.getElementById('map'), {
-            center: { lat: 40.7128, lng: -74.0060 },
+            center: centerLocation,
             zoom: 13,
             disableDefaultUI: true,
             styles: [
@@ -203,7 +304,8 @@ class AtlasExplorer {
         });
 
         document.getElementById('resetViewBtn').addEventListener('click', () => {
-            this.map.setCenter({ lat: 40.7128, lng: -74.0060 });
+            const currentCenter = this.map.getCenter();
+            this.map.setCenter(currentCenter);
             this.map.setZoom(13);
         });
 
