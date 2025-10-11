@@ -771,6 +771,131 @@ body {
     outline-offset: 2px;
 }
 
+/* Location Permission Modal */
+.location-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.location-modal-content {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-xl);
+    animation: slideInUp 0.3s ease-out;
+}
+
+.location-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    justify-content: center;
+}
+
+.location-icon {
+    font-size: 2.5rem;
+    filter: drop-shadow(0 0 10px var(--accent-color));
+}
+
+.location-modal-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.location-modal-body {
+    margin-bottom: 2rem;
+}
+
+.location-modal-body p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.location-benefits {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.benefit {
+    display: flex;
+    align-items: center;
+    color: var(--accent-color);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.location-modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.location-modal-actions .btn {
+    min-width: 160px;
+    justify-content: center;
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .location-modal-content {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+    
+    .location-modal-header {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .location-modal-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .location-modal-actions {
+        flex-direction: column;
+    }
+    
+    .location-modal-actions .btn {
+        min-width: auto;
+        width: 100%;
+    }
+}
+
 @media (prefers-contrast: high) {
     :root {
         --border-color: #64748b;
