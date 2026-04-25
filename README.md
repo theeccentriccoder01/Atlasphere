@@ -9,25 +9,25 @@
 ## 🚀 Live Demo
 
 Experience Atlasphere live here: 
-👉 [![**Atlasphere**](https://img.shields.io/badge/View-Live%20Demo-orange?style=for-the-badge)](https://eccentriccoder01.github.io/Atlasphere)
+👉 [![**Atlasphere**](https://img.shields.io/badge/View-Live%20Demo-orange?style=for-the-badge)](https://theeccentriccoder.github.io/Atlasphere)
 
  <div align="center">
  <p>
 
 [![Open Source Love svg1](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
 ![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?style=flat)
-![Visitors](https://api.visitorbadge.io/api/Visitors?path=eccentriccoder01%2FAtlasphere%20&countColor=%23263759&style=flat)
-![GitHub Forks](https://img.shields.io/github/forks/eccentriccoder01/Atlasphere)
-![GitHub Repo Stars](https://img.shields.io/github/stars/eccentriccoder01/Atlasphere)
-![GitHub Contributors](https://img.shields.io/github/contributors/eccentriccoder01/Atlasphere)
-![GitHub Last Commit](https://img.shields.io/github/last-commit/eccentriccoder01/Atlasphere)
-![GitHub Repo Size](https://img.shields.io/github/repo-size/eccentriccoder01/Atlasphere)
-![GitHub Total Lines](https://sloc.xyz/github/eccentriccoder01/Atlasphere)
-![Github](https://img.shields.io/github/license/eccentriccoder01/Atlasphere)
-![GitHub Issues](https://img.shields.io/github/issues/eccentriccoder01/Atlasphere)
-![GitHub Closed Issues](https://img.shields.io/github/issues-closed-raw/eccentriccoder01/Atlasphere)
-![GitHub Pull Requests](https://img.shields.io/github/issues-pr/eccentriccoder01/Atlasphere)
-![GitHub Closed Pull Requests](https://img.shields.io/github/issues-pr-closed/eccentriccoder01/Atlasphere)
+![Visitors](https://api.visitorbadge.io/api/Visitors?path=theeccentriccoder%2FAtlasphere%20&countColor=%23263759&style=flat)
+![GitHub Forks](https://img.shields.io/github/forks/theeccentriccoder/Atlasphere)
+![GitHub Repo Stars](https://img.shields.io/github/stars/theeccentriccoder/Atlasphere)
+![GitHub Contributors](https://img.shields.io/github/contributors/theeccentriccoder/Atlasphere)
+![GitHub Last Commit](https://img.shields.io/github/last-commit/theeccentriccoder/Atlasphere)
+![GitHub Repo Size](https://img.shields.io/github/repo-size/theeccentriccoder/Atlasphere)
+![GitHub Total Lines](https://sloc.xyz/github/theeccentriccoder/Atlasphere)
+![Github](https://img.shields.io/github/license/theeccentriccoder/Atlasphere)
+![GitHub Issues](https://img.shields.io/github/issues/theeccentriccoder/Atlasphere)
+![GitHub Closed Issues](https://img.shields.io/github/issues-closed-raw/theeccentriccoder/Atlasphere)
+![GitHub Pull Requests](https://img.shields.io/github/issues-pr/theeccentriccoder/Atlasphere)
+![GitHub Closed Pull Requests](https://img.shields.io/github/issues-pr-closed/theeccentriccoder/Atlasphere)
  </p>
  </div>
 
@@ -89,7 +89,7 @@ To run Atlasphere:
 ### 1. Clone the Repository
 
 ```bash
-git clone [https://github.com/eccentriccoder01/Atlasphere.git](https://github.com/eccentriccoder01/Atlasphere.git) # Assuming a repo named Atlasphere
+git clone [https://github.com/theeccentriccoder/Atlasphere.git](https://github.com/theeccentriccoder/Atlasphere.git) # Assuming a repo named Atlasphere
 cd Atlasphere
 ````
 
@@ -141,6 +141,6 @@ This project is open-source and available under the MIT License.
 
 ## 📞 Contact
 
-Developed by [Eccentric Explorer](https://eccentriccoder01.github.io/Me)
+Developed by [Eccentric Explorer](https://theeccentriccoder.github.io/Me)
 
 Feel free to reach out with any questions or feedback\!
